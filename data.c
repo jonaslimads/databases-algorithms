@@ -13,13 +13,14 @@ void write_data(record *records, int num_records, FILE *f) {
 	fwrite(records, sizeof(record), num_records, f);
 }
 
+// fseek moves the file pointer to offset position
 void load_data(FILE *f, long offset) {
 	record r;
 
 	fseek(f, offset, SEEK_SET);
 	fread(&r, sizeof(r), 1, f);
 
-	printf("%s\n", r.vcod);
+	printf("%s %s\n", r.vcod, r.cepa);
 }
 
 int main() {
@@ -34,7 +35,7 @@ int main() {
 
 	// write
 	FILE *f;
-	f = fopen("Vinhos.dat", "wb+");
+	f = fopen("Dados.dat", "wb+");
 
 	// printf("%1ld\n", sizeof(r));
 
@@ -45,7 +46,7 @@ int main() {
 	FILE* in;
 	record r_;
 
-	in = fopen("Vinhos.dat", "rb+");
+	in = fopen("Dados.dat", "rb+");
 
 	load_data(f, 0*sizeof(record)); // first record
 	load_data(f, 1*sizeof(record)); // second...
