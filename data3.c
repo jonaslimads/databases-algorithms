@@ -95,8 +95,20 @@ int sort_compare_keys(const void *k1, const void *k2) {
 node *insert(node *n, int key_value, int rid, node *new_node_recursion) {
 	if (strcmp(n->tipo, "EInd") == 0) {
 
+		// select the subtree
+		// compare key_value with all existing keys;
+		// break if it found a key_value < n->key[i]
+		int i;
+		for (i = 0; i < n->next_free_key; i++) {
+			if (key_value < n->key[i]->value)
+				break;
+		}
+
+		// and use i to select the subtree
+
 		node *new_child = insert(
-			n->p[ n->next_free_key ],
+			// n->p[ n->next_free_key ],
+			n->p[ i ],
 			key_value, rid, new_node_recursion
 		);
 
@@ -105,6 +117,8 @@ node *insert(node *n, int key_value, int rid, node *new_node_recursion) {
 			// if there is space in n->key[], append this new child
 			if (n->next_free_key < 2) {
 				n->key[ n->next_free_key ] = new_child->key[0];
+				n->next_free_key++;
+
 				n->p[n->next_free_p] = new_child;
 				n->next_free_p++;
 
@@ -177,7 +191,7 @@ void write_indices_data(FILE *f, record *records, int num_records) {
 	insert(n, records[1].colheita, 1, NULL);
 	insert(n, records[2].colheita, 2, NULL);
 	insert(n, records[3].colheita, 3, NULL);
-	// insert(n, records[4].colheita, 4, NULL);
+	insert(n, records[4].colheita, 4, NULL);
 
 	print_tree(n, "");
 }
