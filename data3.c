@@ -116,13 +116,13 @@ node *insert(node *n, int key_value, int rid, node *new_node_recursion) {
 
 			// if there is space in n->key[], append this new child
 			if (n->next_free_key < 2) {
-				n->key[ n->next_free_key ] = new_child->key[0];
-				n->next_free_key++;
 
-				n->p[n->next_free_p] = new_child;
-				n->next_free_p++;
+				n->key[ n->next_free_key++ ] = new_child->key[0];
+				n->p[n->next_free_p++] = new_child;
 
 			} else {
+
+
 
 			}
 		}
@@ -148,7 +148,7 @@ node *insert(node *n, int key_value, int rid, node *new_node_recursion) {
 		} else { // out of space
 			/* example: [17* 19*] is already in the leaf (max 2 keys); 
 				we want to append 16*, so we need to sort [17* 19* 16*]
-				then redistribute it into two leaves: [16* NULL] and [17* 19*]
+				then redistribute it into two leaves: [16* 17*] and [19* NULL]
 				*/
 			key *aux[3];
 			aux[0] = n->key[0];
@@ -159,14 +159,14 @@ node *insert(node *n, int key_value, int rid, node *new_node_recursion) {
 
 			// split leaf: first d keys stay in L; d+1 move to L2
 			n->key[0] = aux[0];
-			n->key[1] = NULL;
-			n->next_free_key--;
+			n->key[1] = aux[1];
+			n->next_free_key = 2;
 
 			node *L2 = malloc(sizeof(node));
 			initialize_node(L2, "EDad");
-			L2->key[0] = aux[1];
-			L2->key[1] = aux[2];
-			L2->next_free_key = 2;
+			L2->key[0] = aux[2];
+			L2->key[1] = NULL;
+			L2->next_free_key = 1;
 
 			// return L2 to be insert into this node's parent
 			return L2;
@@ -191,7 +191,8 @@ void write_indices_data(FILE *f, record *records, int num_records) {
 	insert(n, records[1].colheita, 1, NULL);
 	insert(n, records[2].colheita, 2, NULL);
 	insert(n, records[3].colheita, 3, NULL);
-	insert(n, records[4].colheita, 4, NULL);
+	// insert(n, records[4].colheita, 4, NULL);
+	// insert(n, records[5].colheita, 5, NULL);
 
 	print_tree(n, "");
 }
@@ -202,7 +203,7 @@ void write_indices_data(FILE *f, record *records, int num_records) {
 
 int main() {
 
-	static const int num_records = 5;
+	static const int num_records = 6;
 	
 	record r[num_records] = {
 		{"V100", "Don Laurindo", "Merlot", 2017, "Brasil"},
@@ -210,6 +211,7 @@ int main() {
 		{"V180", "Chryseia", "Douro", 2014, "Portugal"},
 		{"V190", "Chryseia", "Douro", 2012, "Portugal"},
 		{"V200", "Chryseia", "Douro", 2018, "Portugal"},
+		// {"V200", "Chryseia", "Douro", 2015, "Portugal"},
 	};
 
 	// write
