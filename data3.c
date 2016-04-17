@@ -100,27 +100,60 @@ node *insert(node *n, int key_value, int rid, node *new_node_recursion) {
 			key_value, rid, new_node_recursion
 		);
 
+		if (new_child != NULL) {
+
+			// if there is space in n->key[], append this new child
+			if (n->next_free_key < 2) {
+				n->key[ n->next_free_key ] = new_child->key[0];
+				n->p[n->next_free_p] = new_child;
+				n->next_free_p++;
+
+			} else {
+
+			}
+		}
+
+		return NULL;
+
 	} else { // leaf
 
-		// try to insert in the next free space (0 or 1)
+		// create new key
+		key *new_key = malloc(sizeof(key));
+		new_key->value = key_value;
+		new_key->rid = rid;
 
+		// if there is free space in n->key[], append it
 		if (n->next_free_key < 2) {
-			// create new key
-			key *new_key = malloc(sizeof(key));
-			new_key->value = key_value;
-			new_key->rid = rid;
-
-			// append it to *n
 			n->key[ n->next_free_key ] = new_key;
 			n->next_free_key++;
-
 
 			// in case there is more than one key, sort n->key[]
 			if (n->next_free_key >= 2)
 				qsort(n->key, n->next_free_key, sizeof(key*), sort_compare_keys);
 
 		} else { // out of space
+			/* example: [17* 19*] is already in the leaf (max 2 keys); 
+				we want to append 16*, so we need to sort [17* 19* 16*]
+				then redistribute it into two leaves: [16* NULL] and [17* 19*]
+				*/
+			key *aux[3];
+			aux[0] = n->key[0];
+			aux[1] = n->key[1];
+			aux[2] = new_key;
 
+			qsort(aux, 3, sizeof(key*), sort_compare_keys);
+
+			// split leaf: first d keys stay in L; d+1 move to L2
+			n->key[0] = aux[0];
+			n->key[1] = NULL;
+
+			node *L2 = malloc(sizeof(node));
+			initialize_node(L2, "EDad");
+			L2->key[0] = aux[1];
+			L2->key[1] = aux[2];
+
+			// return L2 to be insert into this node's parent
+			return L2;
 		}
 		return NULL;
 	}
@@ -140,6 +173,7 @@ void write_indices_data(FILE *f, record *records, int num_records) {
 
 	insert(n, records[0].colheita, 0, NULL);
 	insert(n, records[1].colheita, 1, NULL);
+	insert(n, records[2].colheita, 2, NULL);
 
 	print_tree(n, "");
 }
@@ -153,8 +187,8 @@ int main() {
 	static const int num_records = 5;
 	
 	record r[num_records] = {
-		{"V100", "Don Laurindo", "Merlot", 2011, "Brasil"},
-		{"V150", "Chateau Lafitte", "Chardonnay", 2010, "Franca"},
+		{"V100", "Don Laurindo", "Merlot", 2017, "Brasil"},
+		{"V150", "Chateau Lafitte", "Chardonnay", 2016, "Franca"},
 		{"V180", "Chryseia", "Douro", 2014, "Portugal"},
 		{"V190", "Chryseia", "Douro", 2012, "Portugal"},
 		{"V200", "Chryseia", "Douro", 2017, "Portugal"},
