@@ -110,7 +110,7 @@ node *insert(node *n, int key_value, int rid, node *new_node_recursion) {
 
 			} else {
 				node * N2 = malloc(sizeof(node));
-				initialize_node(N2);
+				initialize_node(N2, "EInd");
 				N2->key[0] = n->key[1];
 				N2->p[0] = n->p[2];
 			
