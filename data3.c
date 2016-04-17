@@ -69,6 +69,10 @@ void print_tree(node *n, char *str) {
 	print_tree(n->p[2], str2);
 }
 
+/*********
+	B+ INSERT
+**********/
+
 void initialize_node(node *n, char *tipo) {
 	strcpy(n->tipo, tipo);
 
@@ -83,6 +87,10 @@ void initialize_node(node *n, char *tipo) {
 	n->next_free_p = n->next_free_key = 0;
 }
 
+// http://stackoverflow.com/questions/23689687/sorting-an-array-of-struct-pointers-using-qsort
+int sort_compare_keys(const void *k1, const void *k2) {
+	return (*(key**)k1)->value - (*(key**)k2)->value;
+}
 
 node *insert(node *n, int key_value, int rid, node *new_node_recursion) {
 	if (strcmp(n->tipo, "EInd") == 0) {
@@ -105,6 +113,12 @@ node *insert(node *n, int key_value, int rid, node *new_node_recursion) {
 			// append it to *n
 			n->key[ n->next_free_key ] = new_key;
 			n->next_free_key++;
+
+
+			// in case there is more than one key, sort n->key[]
+			if (n->next_free_key >= 2)
+				qsort(n->key, n->next_free_key, sizeof(key*), sort_compare_keys);
+
 		} else { // out of space
 
 		}
