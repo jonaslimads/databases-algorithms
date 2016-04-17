@@ -84,7 +84,32 @@ void initialize_node(node *n, char *tipo) {
 }
 
 
-node *insert(node *n, int key, int rid, node *new_node_recursion) {
+node *insert(node *n, int key_value, int rid, node *new_node_recursion) {
+	if (strcmp(n->tipo, "EInd") == 0) {
+
+		node *new_child = insert(
+			n->p[ n->next_free_key ],
+			key_value, rid, new_node_recursion
+		);
+
+	} else { // leaf
+
+		// try to insert in the next free space (0 or 1)
+
+		if (n->next_free_key < 2) {
+			// create new key
+			key *new_key = malloc(sizeof(key));
+			new_key->value = key_value;
+			new_key->rid = rid;
+
+			// append it to *n
+			n->key[ n->next_free_key ] = new_key;
+			n->next_free_key++;
+		} else { // out of space
+
+		}
+		return NULL;
+	}
 	return NULL;
 }
 
