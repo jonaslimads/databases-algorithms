@@ -119,7 +119,18 @@ node *insert(node *n, int key_value, int rid, node *new_node_recursion) {
 				n->key[ n->next_free_key++ ] = new_child->key[0];
 				n->p[n->next_free_p++] = new_child;
 			} else {
+				node * N2 = malloc(sizeof(node));
+				initialize_node(N2, "EInd");
+				N2->key[0] = n->key[1];
+				N2->p[0] = n->p[2];
+			
+				n->key[1] = NULL;
+				n->p[2] = NULL;
 
+				//se N nao for raiz
+				if(strcmp(n->tipo, "EDad") != 0){
+					n->p[n->next_free_p++] = N2;
+				}
 			}
 		}
 
@@ -134,8 +145,7 @@ node *insert(node *n, int key_value, int rid, node *new_node_recursion) {
 
 		// if there is free space in n->key[], append it
 		if (n->next_free_key < 2) {
-			n->key[ n->next_free_key ] = new_key;
-			n->next_free_key++;
+			n->key[ n->next_free_key++ ] = new_key;
 
 			// in case there is more than one key, sort n->key[]
 			if (n->next_free_key >= 2)
@@ -156,7 +166,7 @@ node *insert(node *n, int key_value, int rid, node *new_node_recursion) {
 			// split leaf: first d keys stay in L; d+1 move to L2
 			n->key[0] = aux[0];
 			n->key[1] = NULL;
-			n->next_free_key--;
+			n->next_free_key = 1;
 
 			node *L2 = malloc(sizeof(node));
 			initialize_node(L2, "EDad");
