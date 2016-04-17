@@ -146,11 +146,13 @@ node *insert(node *n, int key_value, int rid, node *new_node_recursion) {
 			// split leaf: first d keys stay in L; d+1 move to L2
 			n->key[0] = aux[0];
 			n->key[1] = NULL;
+			n->next_free_key--;
 
 			node *L2 = malloc(sizeof(node));
 			initialize_node(L2, "EDad");
 			L2->key[0] = aux[1];
 			L2->key[1] = aux[2];
+			L2->next_free_key = 2;
 
 			// return L2 to be insert into this node's parent
 			return L2;
@@ -174,6 +176,8 @@ void write_indices_data(FILE *f, record *records, int num_records) {
 	insert(n, records[0].colheita, 0, NULL);
 	insert(n, records[1].colheita, 1, NULL);
 	insert(n, records[2].colheita, 2, NULL);
+	insert(n, records[3].colheita, 3, NULL);
+	// insert(n, records[4].colheita, 4, NULL);
 
 	print_tree(n, "");
 }
@@ -191,7 +195,7 @@ int main() {
 		{"V150", "Chateau Lafitte", "Chardonnay", 2016, "Franca"},
 		{"V180", "Chryseia", "Douro", 2014, "Portugal"},
 		{"V190", "Chryseia", "Douro", 2012, "Portugal"},
-		{"V200", "Chryseia", "Douro", 2017, "Portugal"},
+		{"V200", "Chryseia", "Douro", 2018, "Portugal"},
 	};
 
 	// write
