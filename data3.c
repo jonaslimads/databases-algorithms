@@ -76,11 +76,6 @@ void print_tree(node *n, char *str) {
 void initialize_node(node *n, char *tipo) {
 	strcpy(n->tipo, tipo);
 
-	// n->key[0] = malloc(sizeof(key));
-	// n->key[1] = malloc(sizeof(key));
-	// n->key[0]->value = n->key[0]->value
-	// 	= n->key[0]->value = n->key[0]->value = -1;
-
 	n->p[0] = n->p[1] = n->p[2] = NULL;
 	n->key[0] = n->key[1] = NULL;
 
@@ -92,13 +87,18 @@ int sort_compare_keys(const void *k1, const void *k2) {
 	return (*(key**)k1)->value - (*(key**)k2)->value;
 }
 
-node *insert(node *n, int key_value, int rid, node *new_node_recursion) {
+node *insert(node **root, node *n, int level, int key_value, int rid, node *new_node_recursion) {
+	
 	if (strcmp(n->tipo, "EInd") == 0) {
 
 		// select the subtree
 		// compare key_value with all existing keys;
 		// break if it found a key_value < n->key[i]
 		int i;
+		// if (rid == 6) {
+		// 	// print_tree(n, "");
+		// 	printf("n %d\n", n->next_free_key);
+		// }
 		for (i = 0; i < n->next_free_key; i++) {
 			if (key_value < n->key[i]->value)
 				break;
@@ -107,8 +107,7 @@ node *insert(node *n, int key_value, int rid, node *new_node_recursion) {
 		// and use i to select the subtree
 
 		node *new_child = insert(
-			// n->p[ n->next_free_key ],
-			n->p[ i ],
+			root, n->p[ i ], level+1,
 			key_value, rid, new_node_recursion
 		);
 
@@ -116,25 +115,58 @@ node *insert(node *n, int key_value, int rid, node *new_node_recursion) {
 
 			// if there is space in n->key[], append this new child
 			if (n->next_free_key < 2) {
-				n->key[ n->next_free_key++ ] = new_child->key[0];
+
 				n->p[n->next_free_p++] = new_child;
+
+				// get first leaf's key from left
+				while (strcmp(new_child->tipo, "EDad") != 0)
+					new_child = new_child->p[0]; // going down on the tree
+				
+				n->key[ n->next_free_key++ ] = new_child->key[0];
+				
 			} else {
-				node * N2 = malloc(sizeof(node));
-				initialize_node(N2, "EInd");
-				N2->key[0] = n->key[1];
-				N2->p[0] = n->p[2];
-			
+				// we will have n = [A* B* C*], which is not supported
+				// so split N into N and N2
+
+				// N2 keeps last D keys and d+1 pointers
+				node *n2 = malloc(sizeof(node));
+				initialize_node(n2, "EInd");
+
+				n2->key[0] = new_child->key[0];
+				n2->p[0] = n->p[2];
+				n2->p[1] = new_child;
+				n2->next_free_key = 1;
+				n2->next_free_p = 2;
+
+				// N keeps first D keys and d+1 pointers
+
+				key *b = n->p[2]->key[0]; // save it to use later
 				n->key[1] = NULL;
 				n->p[2] = NULL;
+				n->next_free_key--;
+				n->next_free_p--;
 
-				//se N nao for raiz
-				if(strcmp(n->tipo, "EDad") != 0){
-					n->p[n->next_free_p++] = N2;
+				
+				 // if n is root, we update the root
+				if (level == 0) {
+					node *new_root = malloc(sizeof(node));
+					initialize_node(new_root, "EInd");
+
+					new_root->key[new_root->next_free_key++] = b;
+					new_root->p[0] = n;
+					new_root->p[1] = n2;
+					new_root->next_free_p = 2;
+
+					*root = new_root;
+					return NULL;
 				}
+
+				// if not root, return n2 since n is already updated
+				return n2;
+
 			}
 		}
-
-		return NULL;
+		
 
 	} else { // leaf
 
@@ -177,7 +209,6 @@ node *insert(node *n, int key_value, int rid, node *new_node_recursion) {
 			// return L2 to be insert into this node's parent
 			return L2;
 		}
-		return NULL;
 	}
 	return NULL;
 }
@@ -185,6 +216,9 @@ node *insert(node *n, int key_value, int rid, node *new_node_recursion) {
 void write_indices_data(FILE *f, record *records, int num_records) {
 	node *n; // indices
 	n = malloc(100*sizeof(node));
+
+	node **root = &n; // initially
+
 	
 	// initialize root and first leaf, respectively
 	initialize_node(&n[0], "EInd");
@@ -193,14 +227,11 @@ void write_indices_data(FILE *f, record *records, int num_records) {
 	
 	initialize_node(&n[1], "EDad");
 
-	insert(n, records[0].colheita, 0, NULL);
-	insert(n, records[1].colheita, 1, NULL);
-	insert(n, records[2].colheita, 2, NULL);
-	insert(n, records[3].colheita, 3, NULL);
-	insert(n, records[4].colheita, 4, NULL);
-	// insert(n, records[5].colheita, 5, NULL);
+	for (int i = 0; i < 11; i++) {
+		insert(root, *root, 0, records[i].colheita, i, NULL);
+	}
 
-	print_tree(n, "");
+	print_tree(*root, "");
 }
 
 
@@ -209,7 +240,7 @@ void write_indices_data(FILE *f, record *records, int num_records) {
 
 int main() {
 
-	static const int num_records = 6;
+	static const int num_records = 20;
 	
 	record r[num_records] = {
 		{"V100", "Don Laurindo", "Merlot", 2017, "Brasil"},
@@ -217,7 +248,12 @@ int main() {
 		{"V180", "Chryseia", "Douro", 2014, "Portugal"},
 		{"V190", "Chryseia", "Douro", 2012, "Portugal"},
 		{"V200", "Chryseia", "Douro", 2018, "Portugal"},
-		// {"V200", "Chryseia", "Douro", 2015, "Portugal"},
+		{"V200", "Chryseia", "Douro", 2020, "Portugal"},
+		{"V200", "Chryseia", "Douro", 2022, "Portugal"},
+		{"V200", "Chryseia", "Douro", 2019, "Portugal"},
+		{"V200", "Chryseia", "Douro", 2030, "Portugal"},
+		{"V200", "Chryseia", "Douro", 2021, "Portugal"},
+		{"V200", "Chryseia", "Douro", 2040, "Portugal"},
 	};
 
 	// write
