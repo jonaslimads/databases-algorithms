@@ -82,14 +82,8 @@ void write_indices_data(FILE *f, record *records, int num_records) {
 
 	// once we have all nodes on q[], we can move them to
 	// storage[] and include children rid
-	for (int i = 0; i < back; i++) {
+	for (int i = 0; i < back; i++)
 		storage[i] = prepare_node_to_store(q[i]);
-		
-		// printf("[%d %d, %d %d %d, %s]\n",
-		// 	storage[i].key1, storage[i].key2,
-		// 	storage[i].rid1, storage[i].rid2, storage[i].rid3,
-		// 	storage[i].tipo);
-	}
 
 	// now we can store storage[] into the FILE
 	fwrite(storage, sizeof(index_storage), back, f);
@@ -103,8 +97,6 @@ index_storage load_index_data(FILE *f, int rid) {
 		printf("Error: rid can't be less than 1.\n");
 		return i;
 	}
-
-	
 
 	fseek(f, (rid-1)*sizeof(index_storage), SEEK_SET);
 	fread(&i, sizeof(index_storage), 1, f);

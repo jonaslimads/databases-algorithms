@@ -66,9 +66,8 @@ node *insert(node **root, node *n, int level, int key_value, int rid) {
 				n2->next_free_p = 2;
 
 				// N keeps first D keys and d+1 pointers
-
 				key *b = n->p[2]->key[0]; // save it to use later
-				n->key[1] = NULL;
+				n->key[] = NULL;
 				n->p[2] = NULL;
 				n->next_free_key--;
 				n->next_free_p--;
