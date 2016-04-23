@@ -34,7 +34,7 @@ void write_indices_data(FILE *f, record *records, int num_records) {
 	// root is a pointer to the first element. It can be changed later on
 	node **root = &n;
 
-	for (int i = 0; i < 11; i++)
+	for (int i = 0; i < num_records; i++)
 		insert(root, *root, 0, records[i].colheita, i+1);
 
 
@@ -48,36 +48,34 @@ void write_indices_data(FILE *f, record *records, int num_records) {
 	node *q[1000];
 	int front = 0, back = 0;
 
-	q[back++] = (*root);
-	q[back-1]->rid = back;
+	q[back] = (*root);
+	q[back]->rid = back;
+	back++;
 	
 	while (front < back) {
-		int parent_index = back - 1;
-
 		// dequeue
 		n = q[front++];
 
 		if (n == NULL)
 			continue;
 
-
-		// check for children
+		// add to the queue each child if they are not null
 		if (n->p[0] != NULL) {
-			storage[parent_index].rid1 = back;
-			q[back++] = n->p[0];
-			q[back-1]->rid = back;
+			q[back] = n->p[0];
+			q[back]->rid = back;
+			back++;
 		}
 
 		if (n->p[1] != NULL) {
-			storage[parent_index].rid2 = back;
-			q[back++] = n->p[1];
-			q[back-1]->rid = back;
+			q[back] = n->p[1];
+			q[back]->rid = back;
+			back++;
 		}
 
 		if (n->p[2] != NULL) {
-			storage[parent_index].rid3 = back;
-			q[back++] = n->p[2];
-			q[back-1]->rid = back;
+			q[back] = n->p[2];
+			q[back]->rid = back;
+			back++;
 		}
 
 	}
