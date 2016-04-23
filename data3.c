@@ -73,13 +73,16 @@ void print_tree(node *n, char *str) {
 	B+ INSERT
 **********/
 
-void initialize_node(node *n, char *tipo) {
-	strcpy(n->tipo, tipo);
 
-	n->p[0] = n->p[1] = n->p[2] = NULL;
-	n->key[0] = n->key[1] = NULL;
+void initialize_node(node **n, char *tipo) {
+	*n = malloc(sizeof(node));
 
-	n->next_free_p = n->next_free_key = 0;
+	strcpy((*n)->tipo, tipo);
+
+	(*n)->p[0] = (*n)->p[1] = (*n)->p[2] = NULL;
+	(*n)->key[0] = (*n)->key[1] = NULL;
+
+	(*n)->next_free_p = (*n)->next_free_key = 0;
 }
 
 // http://stackoverflow.com/questions/23689687/sorting-an-array-of-struct-pointers-using-qsort
@@ -95,10 +98,6 @@ node *insert(node **root, node *n, int level, int key_value, int rid, node *new_
 		// compare key_value with all existing keys;
 		// break if it found a key_value < n->key[i]
 		int i;
-		// if (rid == 6) {
-		// 	// print_tree(n, "");
-		// 	printf("n %d\n", n->next_free_key);
-		// }
 		for (i = 0; i < n->next_free_key; i++) {
 			if (key_value < n->key[i]->value)
 				break;
@@ -129,8 +128,8 @@ node *insert(node **root, node *n, int level, int key_value, int rid, node *new_
 				// so split N into N and N2
 
 				// N2 keeps last D keys and d+1 pointers
-				node *n2 = malloc(sizeof(node));
-				initialize_node(n2, "EInd");
+				node *n2;
+				initialize_node(&n2, "EInd");
 
 				n2->key[0] = new_child->key[0];
 				n2->p[0] = n->p[2];
@@ -149,8 +148,8 @@ node *insert(node **root, node *n, int level, int key_value, int rid, node *new_
 				
 				 // if n is root, we update the root
 				if (level == 0) {
-					node *new_root = malloc(sizeof(node));
-					initialize_node(new_root, "EInd");
+					node *new_root;
+					initialize_node(&new_root, "EInd");
 
 					new_root->key[new_root->next_free_key++] = b;
 					new_root->p[0] = n;
@@ -166,7 +165,7 @@ node *insert(node **root, node *n, int level, int key_value, int rid, node *new_
 
 			}
 		}
-		
+
 
 	} else { // leaf
 
@@ -200,8 +199,8 @@ node *insert(node **root, node *n, int level, int key_value, int rid, node *new_
 			n->key[1] = NULL;
 			n->next_free_key = 1;
 
-			node *L2 = malloc(sizeof(node));
-			initialize_node(L2, "EDad");
+			node *L2;
+			initialize_node(&L2, "EDad");
 			L2->key[0] = aux[1];
 			L2->key[1] = aux[2];
 			L2->next_free_key = 2;
@@ -214,27 +213,21 @@ node *insert(node **root, node *n, int level, int key_value, int rid, node *new_
 }
 
 void write_indices_data(FILE *f, record *records, int num_records) {
-	node *n; // indices
-	n = malloc(100*sizeof(node));
+	node *n, *n_leaf; // indices
 
-	node **root = &n; // initially
+	// initialize first indice and first leaf, respectively
+	initialize_node(&n, "EInd");
+	initialize_node(&n_leaf, "EDad");
+	n->p[n->next_free_p++] = n_leaf;
 
-	
-	// initialize root and first leaf, respectively
-	initialize_node(&n[0], "EInd");
-	n[0].p[0] = &n[1];
-	n[0].next_free_p++;
-	
-	initialize_node(&n[1], "EDad");
+	node **root = &n;
 
-	for (int i = 0; i < 11; i++) {
+	for (int i = 0; i < 11; i++)
 		insert(root, *root, 0, records[i].colheita, i, NULL);
-	}
+
 
 	print_tree(*root, "");
 }
-
-
 
 
 
@@ -265,10 +258,6 @@ int main() {
 	write_records_data(f, r, num_records);
 	write_indices_data(i, r, num_records);
 
-
-	// load_record_data(f, 0*sizeof(record)); // first record
-	// load_record_data(f, 1*sizeof(record)); // second...
-	// load_record_data(f, 2*sizeof(record)); // 
 
 
 	fclose(f);
