@@ -55,7 +55,7 @@ node *insert(node **root, node *n, int level, int key_value, int rid);
 
 /**
 	Print a tree whose first index is *n;
-	*str is the prefix for each line.
+	@param *str		the prefix for each line.
 */
 void print_tree(node *n, char *str);
 

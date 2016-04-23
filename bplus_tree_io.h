@@ -56,7 +56,7 @@ void write_indices_data(FILE *f, record *records, int num_records);
 index_storage load_index_data(FILE *f, int rid);
 
 /**
-	Get *node properties and passed it to index_storage.
+	Get *node properties and pass it to index_storage.
 	node's children are visited to get children's rid
 */
 index_storage prepare_node_to_store(node *node);
