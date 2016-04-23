@@ -313,17 +313,13 @@ void write_indices_data(FILE *f, record *records, int num_records) {
 	
 }
 
-void load_index_data(FILE *f, int rid) {
+index_storage load_index_data(FILE *f, int rid) {
 	index_storage i;
 
 	fseek(f, (rid-1)*sizeof(index_storage), SEEK_SET);
 	fread(&i, sizeof(index_storage), 1, f);
 
-	printf("[%d %d, %d %d %d, %s]\n",
-		i.key1, i.key2,
-		i.rid1, i.rid2, i.rid3,
-		i.tipo);
-
+	return i;
 }
 
 int main() {
@@ -353,8 +349,12 @@ int main() {
 	write_records_data(f, r, num_records);
 	write_indices_data(i, r, num_records);
 
-	load_index_data(i, 1); // root
-
+	index_storage root = load_index_data(i, 1); // root
+	
+	printf("[%d %d, %d %d %d, %s]\n",
+		root.key1, root.key2,
+		root.rid1, root.rid2, root.rid3,
+		root.tipo);
 
 	fclose(f);
 	return 0;
