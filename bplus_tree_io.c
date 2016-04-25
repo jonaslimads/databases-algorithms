@@ -38,7 +38,7 @@ void write_indices_data(FILE *f, record *records, int num_records) {
 		insert(root, *root, 0, records[i].colheita, i+1);
 
 
-	// print_tree(*root, "");
+	print_tree(*root, "");
 
 
 	// QUEUE ALGORITHM
@@ -112,9 +112,10 @@ index_storage prepare_node_to_store(node *node) {
 	a.key2 = node->key[1] != NULL ? node->key[1]->value : -1;
 
 	if (strcmp(a.tipo, "EInd") == 0) {
-		a.rid1 = node->p[0] != NULL ? node->p[0]->rid : -1;
-		a.rid2 = node->p[1] != NULL ? node->p[1]->rid : -1;
-		a.rid3 = node->p[2] != NULL ? node->p[2]->rid : -1;
+		// indices start from 1 (not 0)
+		a.rid1 = node->p[0] != NULL ? node->p[0]->rid+1 : -1;
+		a.rid2 = node->p[1] != NULL ? node->p[1]->rid+1 : -1;
+		a.rid3 = node->p[2] != NULL ? node->p[2]->rid+1 : -1;
 	} else { // EDad
 		a.rid1 = node->key[0] != NULL ? node->key[0]->rid : -1;
 		a.rid2 = node->key[1] != NULL ? node->key[1]->rid : -1;
