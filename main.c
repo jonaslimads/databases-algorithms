@@ -61,7 +61,7 @@ int main() {
 
 	// busca
 	record result;
-	int rid = search(i, 2040);
+	int rid = search(i, 2029);
 	if (rid != -1) {
 		printf("\n\n\nSearch results:\n");
 		record wanted_record = load_record_data(f, rid);

@@ -1,0 +1,3 @@
+yacc -d dbms.y
+lex dbms.l
+gcc lex.yy.c y.tab.c io.c -o dbms

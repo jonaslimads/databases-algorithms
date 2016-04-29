@@ -1,0 +1,2 @@
+gcc test.c io.c -o testing
+./testing
