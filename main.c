@@ -21,6 +21,9 @@ int main() {
 		{"V200", "Chryseia", "Douro", 2030, "Portugal"},
 		{"V200", "Chryseia", "Douro", 2021, "Portugal"},
 		{"V200", "Chryseia", "Douro", 2040, "Portugal"},
+		// // {"V100", "Don Laurindo", "Merlot", 2017, "Brasil"},
+		// {"V100", "Don Laurindo", "Merlot", 2017, "Brasil"},
+		// {"V100", "Don Laurindo", "Merlot", 2017, "Brasil"},
 	};
 
 	// write
@@ -55,6 +58,20 @@ int main() {
 			index.rid1, index.rid2, index.rid3,
 			index.tipo);
 	}
+
+	// busca
+	record result;
+	int rid = search(i, 2040);
+	if (rid != -1) {
+		printf("\n\n\nSearch results:\n");
+		record wanted_record = load_record_data(f, rid);
+		printf("rid=%d [%s, %s, %s, %d, %s]\n\n",
+			rid, wanted_record.vcod, wanted_record.produtor, wanted_record.cepa,
+			wanted_record.colheita, wanted_record.pais);
+
+	}
+	
+	// load record
 
 	fclose(f);
 	return 0;

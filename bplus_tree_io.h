@@ -61,4 +61,8 @@ index_storage load_index_data(FILE *f, int rid);
 */
 index_storage prepare_node_to_store(node *node);
 
+/**
+*/
+int search(FILE *f, int key_value);
+
 #endif //BPLUS_IO

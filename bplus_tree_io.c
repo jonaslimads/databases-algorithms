@@ -90,6 +90,42 @@ void write_indices_data(FILE *f, record *records, int num_records) {
 	
 }
 
+
+int search(FILE *f, int key_value) {
+
+	// initially root
+	index_storage *i = malloc(sizeof(index_storage));
+
+	fseek(f, 0, SEEK_SET);
+	fread(i, sizeof(index_storage), 1, f);
+
+
+	while (i != NULL) {
+		if(strcmp(i->tipo, "EDad") == 0) {
+
+			if(i->key1 == key_value)
+				return i->rid1;
+			else if(i->key2 == key_value)
+				return i->rid2;
+			else
+				return -1;
+		} else {
+
+			if(key_value < i->key1)
+				fseek(f, (i->rid1-1)*sizeof(index_storage), SEEK_SET);
+			else if(key_value >= i->key2)
+				fseek(f, (i->rid3-1)*sizeof(index_storage), SEEK_SET);
+			else
+				fseek(f, (i->rid2-1)*sizeof(index_storage), SEEK_SET);
+
+			fread(i, sizeof(index_storage), 1, f);
+		}
+	}
+
+	return -1;
+
+}
+
 index_storage load_index_data(FILE *f, int rid) {
 	index_storage i;
 
