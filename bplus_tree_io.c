@@ -100,16 +100,15 @@ int search(FILE *f, int key_value) {
 	fseek(f, 0, SEEK_SET);
 	fread(i, sizeof(index_storage), 1, f);
 
-	printf("bolean %d\n", i->boolean_index_visited);
 	while (i != NULL) {
-		if((strcmp(i->tipo, "EDad") == 0) && (i->boolean_index_visited == 0)) {
+		if((strcmp(i->tipo, "EDad") == 0)) {
 
 			if(i->key1 == key_value){
-				i->boolean_index_visited = 1;
+				//i->boolean_index_visited = 1;
 				return i->rid1;
 			}
 			else if(i->key2 == key_value){
-				i->boolean_index_visited = 1;
+				//i->boolean_index_visited = 1;
 				return i->rid2;
 			}
 			else{
@@ -134,37 +133,8 @@ int search(FILE *f, int key_value) {
 }
 
 
-void search2(FILE *f, int key_value){
-	int vector[20];
-	int j = 0;
-	
-	int item_rid;
-	printf("teste1\n");
-	do{
-		item_rid = search(f,key_value);
-		if(item_rid != -1){
-			vector[j] = item_rid;
-			j++;
-			printf("teste2\n");
-		}
 
 
-	}while(item_rid != -1);
-
-
-	printf("teste3\n");
-	for(int i = 0; i < j; i++){
-		printf("%d\n", vector[i]);
-		printf("teste4\n");
-	}
-}
-
-
-//put all values of index_storage.boolean_index_visited = 0
-void refresh(FILE *f){
-
-
-}
 
 index_storage load_index_data(FILE *f, int rid) {
 	index_storage i;
