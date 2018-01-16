@@ -95,20 +95,26 @@ int search(FILE *f, int key_value) {
 
 	// initially root
 	index_storage *i = malloc(sizeof(index_storage));
+	//i->boolean_index_visited = 0;
 
 	fseek(f, 0, SEEK_SET);
 	fread(i, sizeof(index_storage), 1, f);
 
-
 	while (i != NULL) {
-		if(strcmp(i->tipo, "EDad") == 0) {
+		if((strcmp(i->tipo, "EDad") == 0)) {
 
-			if(i->key1 == key_value)
+			if(i->key1 == key_value){
+				//i->boolean_index_visited = 1;
 				return i->rid1;
-			else if(i->key2 == key_value)
+			}
+			else if(i->key2 == key_value){
+				//i->boolean_index_visited = 1;
 				return i->rid2;
-			else
+			}
+			else{
+				//colocar ou nao?
 				return -1;
+			}
 		} else {
 
 			if(key_value < i->key1)
@@ -125,6 +131,10 @@ int search(FILE *f, int key_value) {
 	return -1;
 
 }
+
+
+
+
 
 index_storage load_index_data(FILE *f, int rid) {
 	index_storage i;
@@ -147,6 +157,8 @@ index_storage prepare_node_to_store(node *node) {
 	a.key1 = node->key[0] != NULL ? node->key[0]->value : -1;
 	a.key2 = node->key[1] != NULL ? node->key[1]->value : -1;
 
+	a.boolean_index_visited = 0;
+	
 	if (strcmp(a.tipo, "EInd") == 0) {
 		// indices start from 1 (not 0)
 		a.rid1 = node->p[0] != NULL ? node->p[0]->rid+1 : -1;
